@@ -7,37 +7,37 @@ export default function Section5() {
       title: "Anti-age",
       description:
         "Vodorod terapiyasi ushbu muammoning innovatsion va samarali yechimini taklif etadi, organizmga uch tomonlama ta’sir ko‘rsatadi",
-      hasLink: true,
+
     },
     {
       title: "Sport",
       description:
         "Vodorod terapiyasi ushbu muammoning innovatsion va samarali yechimini taklif etadi, organizmga uch tomonlama ta’sir ko‘rsatadi",
-      hasLink: true,
+
     },
     {
       title: "Kardiologiya",
       description:
         "Vodorod terapiyasi ushbu muammoning innovatsion va samarali yechimini taklif etadi, organizmga uch tomonlama ta’sir ko‘rsatadi",
-      hasLink: true,
+
     },
     {
       title: "Pulmonologiya",
       description:
         "Vodorod terapiyasi ushbu muammoning innovatsion va samarali yechimini taklif etadi, organizmga uch tomonlama ta’sir ko‘rsatadi",
-      hasLink: true,
+
     },
     {
       title: "Nevrologiya",
       description:
         "Vodorod terapiyasi ushbu muammoning innovatsion va samarali yechimini taklif etadi, organizmga uch tomonlama ta’sir ko‘rsatadi",
-      hasLink: true,
+
     },
     {
       title: "Endokrinologiya",
       description:
         "Vodorod terapiyasi ushbu muammoning innovatsion va samarali yechimini taklif etadi, organizmga uch tomonlama ta’sir ko‘rsatadi",
-      hasLink: true,
+
     },
   ];
 
