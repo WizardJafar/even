@@ -277,31 +277,27 @@ export default function Section6() {
       {/* Product Details Modal */}
       {selectedProduct && (
         <dialog className="modal modal-open">
-          <div className="modal-box max-w-3xl w-full max-h-[90vh] p-0 rounded-3xl overflow-hidden flex flex-col">
-            {/* Modal Image */}
-            <div className="relative h-64 sm:h-80 flex-shrink-0">
-              <img
-                src={selectedProduct.image}
-                alt={selectedProduct.title}
-                className="w-full h-full object-cover"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
-            </div>
-
+          <div className="modal-box max-w-4xl w-full max-h-[90vh] p-0 rounded-3xl overflow-hidden flex flex-col">
             {/* Modal Content */}
-            <div className="p-6 sm:p-10 overflow-y-auto flex-1 flex flex-col">
-              <div className="mb-6">
-                <h3 className="text-2xl sm:text-4xl font-bold text-gray-800 mb-2">{selectedProduct.title}</h3>
-                <p className="text-[#4a86ad] font-medium text-base uppercase tracking-wide">{selectedProduct.subtitle}</p>
+            <div className="p-8 sm:p-12 overflow-y-auto flex-1 flex flex-col">
+              <div className="mb-10">
+                <h3 className="text-4xl sm:text-6xl font-bold text-gray-900 mb-4 leading-tight">
+                  {selectedProduct.title}
+                </h3>
+                <p className="text-[#2a6dad] font-semibold text-xl sm:text-2xl uppercase tracking-wide">
+                  {selectedProduct.subtitle}
+                </p>
               </div>
 
-              <div className="bg-gradient-to-r from-blue-50 to-slate-50 rounded-2xl p-4 sm:p-8 mb-6 overflow-y-auto flex-1">
-                <p className="text-gray-700 leading-relaxed text-base sm:text-lg">{selectedProduct.description}</p>
+              <div className="bg-gradient-to-r from-blue-50 to-slate-50 rounded-2xl p-8 sm:p-12 mb-10 overflow-y-auto flex-1">
+                <p className="text-gray-900 leading-loose text-xl sm:text-2xl font-normal">
+                  {selectedProduct.description}
+                </p>
               </div>
 
-              <div className="flex flex-col sm:flex-row gap-4 mt-auto">
+              <div className="flex flex-col sm:flex-row gap-6 mt-auto">
                 <button
-                  className="flex-1 px-6 py-4 rounded-xl text-white text-base sm:text-lg font-semibold transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/50 active:scale-95 bg-gradient-to-r from-[#4a86ad] to-[#5a96bd]"
+                  className="flex-1 px-10 py-6 rounded-xl text-white text-xl sm:text-2xl font-bold transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/50 active:scale-95 bg-gradient-to-r from-[#4a86ad] to-[#5a96bd]"
                   onClick={() => {
                     setSelectedProduct(null);
                     setOrderProduct(selectedProduct);
@@ -311,7 +307,7 @@ export default function Section6() {
                 </button>
 
                 <button
-                  className="flex-1 px-6 py-4 rounded-xl text-base sm:text-lg font-semibold border-2 border-gray-300 text-gray-700 transition-all duration-300 hover:bg-gray-100 hover:border-gray-400 active:scale-95"
+                  className="flex-1 px-10 py-6 rounded-xl text-xl sm:text-2xl font-bold border-3 border-gray-400 text-gray-800 transition-all duration-300 hover:bg-gray-100 hover:border-gray-500 active:scale-95"
                   onClick={() => setSelectedProduct(null)}
                 >
                   Yopish
@@ -322,6 +318,7 @@ export default function Section6() {
           <div className="modal-backdrop" onClick={() => setSelectedProduct(null)}></div>
         </dialog>
       )}
+
 
       {/* Order Form Modal */}
       {orderProduct && (

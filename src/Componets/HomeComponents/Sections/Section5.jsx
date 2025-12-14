@@ -257,15 +257,7 @@ Uning samaradorligi, universalligi va xavfsizligi ushbu usulni nihoyatda istiqbo
             ))}
           </div>
 
-          {/* Кнопка "Задать вопрос" */}
-          <div className="text-center mt-12">
-            <button
-              onClick={() => setQuestionModalOpen(true)}
-              className="btn bg-gradient-to-r from-[#4a86ad] to-[#2d3748] text-white px-6 py-3 rounded-full hover:shadow-lg"
-            >
-              Savol berish
-            </button>
-          </div>
+          
         </div>
       </section>
 
