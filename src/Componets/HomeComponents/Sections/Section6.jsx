@@ -277,47 +277,49 @@ export default function Section6() {
       {/* Product Details Modal */}
       {selectedProduct && (
         <dialog className="modal modal-open">
-          <div className="modal-box max-w-4xl w-full max-h-[90vh] p-0 rounded-3xl overflow-hidden flex flex-col">
-            {/* Modal Content */}
-            <div className="p-8 sm:p-12 overflow-y-auto flex-1 flex flex-col">
-              <div className="mb-10">
-                <h3 className="text-4xl sm:text-6xl font-bold text-gray-900 mb-4 leading-tight">
-                  {selectedProduct.title}
-                </h3>
-                <p className="text-[#2a6dad] font-semibold text-xl sm:text-2xl uppercase tracking-wide">
-                  {selectedProduct.subtitle}
-                </p>
-              </div>
+          <div className="modal-box max-w-3xl w-full p-6 rounded-xl flex flex-col">
+            {/* Заголовок */}
+            <div className="mb-6 text-center">
+              <h3 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-2 leading-snug">
+                {selectedProduct.title}
+              </h3>
+              <p className="text-[#2a6dad] font-semibold text-lg sm:text-xl uppercase tracking-wide">
+                {selectedProduct.subtitle}
+              </p>
+            </div>
 
-              <div className="bg-gradient-to-r from-blue-50 to-slate-50 rounded-2xl p-8 sm:p-12 mb-10 overflow-y-auto flex-1">
-                <p className="text-gray-900 leading-loose text-xl sm:text-2xl font-normal">
-                  {selectedProduct.description}
-                </p>
-              </div>
+            {/* Описание */}
+            <div className="mb-6 text-left ">
+              <p className="text-gray-900 text-lg sm:text-xl leading-relaxed font-normal">
+                {selectedProduct.description}
+              </p>
+            </div>
 
-              <div className="flex flex-col sm:flex-row gap-6 mt-auto">
-                <button
-                  className="flex-1 px-10 py-6 rounded-xl text-white text-xl sm:text-2xl font-bold transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/50 active:scale-95 bg-gradient-to-r from-[#4a86ad] to-[#5a96bd]"
-                  onClick={() => {
-                    setSelectedProduct(null);
-                    setOrderProduct(selectedProduct);
-                  }}
-                >
-                  BUYURTMA BERISH
-                </button>
+            {/* Кнопки */}
+            <div className="flex flex-col sm:flex-row gap-4">
+              <button
+                className="flex-1 px-8 py-5 rounded-xl text-white text-xl sm:text-2xl font-bold bg-[#4a86ad] hover:bg-[#5a96bd] transition-colors duration-300"
+                onClick={() => {
+                  setSelectedProduct(null);
+                  setOrderProduct(selectedProduct);
+                }}
+              >
+                BUYURTMA BERISH
+              </button>
 
-                <button
-                  className="flex-1 px-10 py-6 rounded-xl text-xl sm:text-2xl font-bold border-3 border-gray-400 text-gray-800 transition-all duration-300 hover:bg-gray-100 hover:border-gray-500 active:scale-95"
-                  onClick={() => setSelectedProduct(null)}
-                >
-                  Yopish
-                </button>
-              </div>
+              <button
+                className="flex-1 px-8 py-5 rounded-xl text-xl sm:text-2xl font-bold border-2 border-gray-400 text-gray-800 hover:bg-gray-100 transition-colors duration-300"
+                onClick={() => setSelectedProduct(null)}
+              >
+                Yopish
+              </button>
             </div>
           </div>
+
           <div className="modal-backdrop" onClick={() => setSelectedProduct(null)}></div>
         </dialog>
       )}
+
 
 
       {/* Order Form Modal */}
