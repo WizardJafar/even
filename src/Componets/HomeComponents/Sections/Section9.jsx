@@ -15,7 +15,7 @@ export default function Section9() {
         { num: 13, title: "Miya samaradorligini oshirish", desc: "Kognitiv funksiyalarni yaxshilash" },
         { num: 14, title: "Yoshartirish", desc: "Biologik yoshni pasaytirish va yoshartirish jarayonlarini ishga tushirish" },
     ];
-
+// fksdkl;fds;lkf
     return (
         <section className="py-20 bg-gradient-to-b from-white to-blue-50" id="results"  >
             <div className="max-w-7xl mx-auto px-6">
