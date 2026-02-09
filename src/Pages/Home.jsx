@@ -1,39 +1,58 @@
-import React from 'react'
-import Header from '../Componets/MainComponents/Navbar';
-import Footer from '../Componets/MainComponents/Footer';
-import Navbar from '../Componets/MainComponents/Navbar';
-import Section1 from '../Componets/HomeComponents/Sections/Section1';
-import Section4 from '../Componets/HomeComponents/Sections/Section4';
-import Section5 from '../Componets/HomeComponents/Sections/Section5';
-import Section6 from '../Componets/HomeComponents/Sections/Section6';
-import Section7 from '../Componets/HomeComponents/Sections/Section7';
-import Section8 from '../Componets/HomeComponents/Sections/Section8';
-import Section9 from '../Componets/HomeComponents/Sections/Section9';
-import { Section10 } from '../Componets/HomeComponents/Sections/Section10';
-import { Section11 } from '../Componets/HomeComponents/Sections/Section11';
-import { Section12 } from '../Componets/HomeComponents/Sections/Section12';
-import { Section13 } from '../Componets/HomeComponents/Sections/Section13';
-import Section14 from '../Componets/HomeComponents/Sections/Section14';
+import React, { useMemo, useState } from "react";
+import { useSiteConfig } from "../Hooks/useSiteConfig";
+
+import Header from "../Componets/MainComponents/Header";
+import Footer from "../Componets/MainComponents/Footer";
+
+import HeroStatsBar from "../Componets/Sections/HeroStatsBar";
+import OurServicesGrid from "../Componets/Sections/OurServicesGrid";
+import ProblemsSection from "../Componets/Sections/ProblemsSection";
+import SolutionsSection from "../Componets/Sections/SolutionsSection";
+import WorkflowSection from "../Componets/Sections/WorkflowSection";
+import LettersOrderForm from "../Componets/Sections/LettersOrderForm";
+import PartnershipForm from "../Componets/Sections/PartnershipForm";
+import ContactsMapCard from "../Componets/Sections/ContactsMapCard";
 
 const Home = () => {
-    return (
-        <div>
-            <Navbar />
-            <Section1 />
-            <Section4 />
-            <Section5 />
-            <Section6 />
-            <Section7 />
-            <Section8 />
-            <Section9 />
-            <Section10 />
-            <Section11 />
-            <Section12 />
-            <Section13 />
-            <Section14 />
-            <Footer />
-        </div>
-    )
-}
+  const { site, loading, error } = useSiteConfig();
+  const [lang, setLang] = useState("ru");
 
-export default Home
+  const t = useMemo(() => {
+    const i18n = site?.i18n || {};
+    const safeLang = (lang || "ru").toLowerCase().trim();
+    return i18n?.[safeLang] ?? i18n?.ru ?? {};
+  }, [site, lang]);
+
+  return (
+    <div>
+      <Header
+        site={site}
+        lang={lang}
+        setLang={setLang}
+        t={t}
+        loading={loading}
+        error={error}
+      />
+
+      {/* ✅ ВАЖНО: передаём t везде где есть текст */}
+      <HeroStatsBar t={t} loading={loading} />
+
+      <OurServicesGrid t={t} loading={loading} />
+
+      <ProblemsSection t={t} loading={loading} />
+      <SolutionsSection t={t} loading={loading} />
+      <WorkflowSection t={t} loading={loading} />
+
+
+      <LettersOrderForm t={t} loading={loading} />
+      <PartnershipForm t={t} loading={loading} />
+
+      <ContactsMapCard t={t} loading={loading} />
+
+
+      <Footer />
+    </div>
+  );
+};
+
+export default Home;

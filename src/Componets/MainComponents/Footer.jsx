@@ -1,108 +1,48 @@
-import { useState } from "react";
-import logo from "../../assets/logo.png";
+import React from "react";
 
+/**
+ * Простой футер как на макете:
+ * EVEN слева
+ * текст по центру
+ * PERFECT MEDIA справа
+ */
 export default function Footer() {
-    const [isOpen, setIsOpen] = useState(false);
-
-    const scrollToSection = (id) => {
-        const el = document.getElementById(id);
-        if (el) {
-            el.scrollIntoView({ behavior: "smooth" });
-        }
-    };
-    const links = [
-        { to: "home", label: "Bosh sahifa" },
-        { to: "company", label: "Kompaniya haqida" },
-        { to: "video", label: "Video" },
-        { to: "catalog", label: "Katalog" },
-        { to: "apply", label: "Qo‘llanilishi" },
-        { to: "cert", label: "Sertifikat (RU)" },
-    ];
-
-    return (
-        <footer className="bg-gray-800 text-gray-300 py-16">
-            <div className="max-w-7xl mx-auto px-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
-
-                    {/* 1. Logo + matn */}
-                    <div className="space-y-6">
-                        <div className="flex items-center gap-4">
-                            <img
-                                loading="lazy"
-                                src={logo}
-                                alt="Hydrogenium"
-                                className="w-16 h-16"
-                            />
-                            <div>
-                                <h3 className="text-xl font-bold text-white">
-                                    HYDROGENIUM
-                                </h3>
-                                <p className="text-sm text-gray-400">
-                                    YOSHLIGINGIZNI QAYTARAMIZ
-                                </p>
-                            </div>
-                        </div>
-
-                        <p className="text-sm leading-relaxed">
-                            Saytda joylashtirilgan barcha ma’lumotlar faqat tanishish uchun mo‘ljallangan bo‘lib,
-                            ommaviy oferta hisoblanmaydi.
-                        </p>
-
-                        <div className="text-sm space-y-1">
-                            <p className="hover:text-[#4a86ad] cursor-pointer transition">
-                                Maxfiylik siyosati
-                            </p>
-                            <p className="hover:text-[#4a86ad] cursor-pointer transition">
-                                Cookie fayllardan foydalanish
-                            </p>
-                        </div>
-                    </div>
-
-                    {/* 2. Menyu */}
-                    <div>
-                        <h4 className="text-white font-bold text-lg mb-6">
-                            MENYU
-                        </h4>
-
-                        <div className="flex flex-col gap-3 text-sm">
-                            {links.map((item) => (
-                                <button
-                                    key={item.to}
-                                    onClick={() => scrollToSection(item.to)}
-                                    className="text-left hover:text-[#4a86ad] transition"
-                                >
-                                    {item.label}
-                                </button>
-                            ))}
-                        </div>
-                    </div>
-
-
-                    {/* 3. Kontaktlar */}
-                    <div>
-                        <h4 className="text-white font-bold text-lg mb-6">
-                            ALOQA
-                        </h4>
-                        <div className="space-y-4 text-sm">
-                            <p className="leading-relaxed">
-                                Toshkent, O‘zbekiston,<br />
-                                Oybek ko‘chasi 44,<br />
-                            </p>
-                            <p className="text-lg font-medium text-white">
-                                +998 90 933 66 00
-                            </p>
-                        </div>
-                    </div>
-
-                    {/* 4. Desktopda bo‘sh joy (tekislash uchun) */}
-                    <div className="hidden lg:block"></div>
-                </div>
-
-                {/* Copyright */}
-                <div className="mt-12 pt-8 border-t border-gray-700 text-center text-sm text-gray-500">
-                    © 2025 Hydrogenium. Barcha huquqlar himoyalangan.
-                </div>
+  return (
+    <footer className="bg-neutral-900 border-t border-white/10">
+      <div className="mx-auto max-w-7xl px-4 md:px-8">
+        <div className="h-20 flex items-center justify-between gap-6">
+          {/* LEFT: EVEN */}
+          <div className="flex items-center gap-3">
+            <div className="flex flex-col gap-[2px]">
+              <span className="block w-4 h-[3px] bg-red-600" />
+              <span className="block w-4 h-[3px] bg-red-600" />
+              <span className="block w-4 h-[3px] bg-red-600" />
             </div>
-        </footer>
-    );
+            <span className="text-white font-black tracking-wide text-lg">
+              EVEN
+            </span>
+          </div>
+
+          {/* CENTER TEXT (hidden on small) */}
+          <div className="hidden md:block text-sm text-white/50">
+            © {new Date().getFullYear()} EVEN. Все права защищены
+          </div>
+
+          {/* RIGHT: Perfect Media */}
+          <div className="flex items-center gap-3 text-white/60">
+            <span className="hidden sm:block text-sm">
+              Сайт был разработан
+            </span>
+
+            <div className="flex items-center gap-2 font-semibold tracking-wide">
+              <div className="w-7 h-7 border border-white/30 flex items-center justify-center">
+                PM
+              </div>
+              <span>PERFECT MEDIA</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </footer>
+  );
 }

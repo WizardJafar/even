@@ -1,8 +1,7 @@
 import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import Navbar from './Componets/MainComponents/Navbar'
+
 import Footer from './Componets/MainComponents/Footer'
+import Header from './Componets/MainComponents/Header'
 import { Outlet } from 'react-router-dom'
 
 function App() {
@@ -10,7 +9,7 @@ function App() {
 
   return (
     <>
-      <Navbar />
+      <Header />
       <Outlet />
       <Footer />
     </>
