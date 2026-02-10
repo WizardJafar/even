@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 
-const API_BASE =
-  window.location.hostname === "localhost"
+function getApiBase() {
+  if (typeof window === "undefined") return "";
+  return window.location.hostname === "localhost"
     ? "http://localhost:5050"
     : "https://even-backend-f3n6.onrender.com";
+}
 
 export function useSiteConfig() {
   const [site, setSite] = useState(null);
@@ -12,6 +14,8 @@ export function useSiteConfig() {
 
   useEffect(() => {
     let alive = true;
+
+    const API_BASE = getApiBase();
 
     (async () => {
       try {
