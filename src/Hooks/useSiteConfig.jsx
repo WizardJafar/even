@@ -3,8 +3,8 @@ import { useEffect, useState } from "react";
 function getApiBase() {
   if (typeof window === "undefined") return "";
   return window.location.hostname === "localhost"
-    ? "https://even-backend-f3n6.onrender.com"
-    : "http://localhost:5050";
+    ? "http://localhost:5050"
+    : "https://even-backend-f3n6.onrender.com";
 }
 
 export function useSiteConfig() {
