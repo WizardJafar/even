@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
 
-const API_BASE = "http://localhost:5050";
+const API_BASE =
+  window.location.hostname === "localhost"
+    ? "http://localhost:5050"
+    : "https://even-backend-f3n6.onrender.com";
 
 export function useSiteConfig() {
   const [site, setSite] = useState(null);
