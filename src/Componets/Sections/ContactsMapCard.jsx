@@ -1,93 +1,100 @@
-import React, { useMemo, useState } from "react";
-import {
-  FaMapMarkerAlt,
-  FaPhoneAlt,
-  FaRegClock,
-  FaInstagram,
-  FaFacebookF,
-  FaTelegramPlane,
-} from "react-icons/fa";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+// ContactsMapCardSimple.jsx
+import React, { useEffect, useMemo, useRef, useState } from "react";
+import { toast } from "react-toastify";
+import { FaMapMarkerAlt, FaPhoneAlt, FaRegClock, FaTelegramPlane } from "react-icons/fa";
 
-/** FRONT-ONLY */
+/** ⚠️ FRONT-ONLY */
 const TG_TOKEN = "8462021874:AAFCWHXq-NGVc2Y3RVRZbNNkysrLCxsEww8";
 const TG_CHAT_ID = "-5202828539";
 
-// MAP
-const MAP_IFRAME_SRC = "https://www.google.com/maps?q=Tashkent&output=embed";
+const MAP_IFRAME_SRC =
+  "https://www.google.com/maps/embed?pb=!1m17!1m12!1m3!1d7367.102660964102!2d69.29442499999998!3d41.38242!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m2!1m1!2zNDHCsDIyJzU2LjciTiA2OcKwMTcnMzkuOSJF!5e1!3m2!1sen!2suk!4v1770748861360!5m2!1sen!2suk";
+
+const MAP_OPEN_URL = "https://www.google.com/maps?q=41.38242,69.294425";
+
+const PHONE_DISPLAY = "+998 33 195 15 05";
+const PHONE_TEL = "+998331951505";
+const TG_USERNAME = "umartoyirov";
+const TG_LINK = `https://t.me/${TG_USERNAME}`;
+
+// ---- helpers
+function useMapLazyMount({ rootMargin = "300px", fallbackMs = 1500 } = {}) {
+  const ref = useRef(null);
+  const [ready, setReady] = useState(false);
+
+  useEffect(() => {
+    // if no IO support -> load immediately
+    if (typeof window === "undefined") return;
+    if (!("IntersectionObserver" in window)) {
+      setReady(true);
+      return;
+    }
+
+    // hard fallback: never hang
+    const t = setTimeout(() => setReady(true), fallbackMs);
+
+    const el = ref.current;
+    if (!el) {
+      // if ref not attached yet, fallback will fire anyway
+      return () => clearTimeout(t);
+    }
+
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setReady(true);
+          io.disconnect();
+        }
+      },
+      { rootMargin }
+    );
+
+    io.observe(el);
+
+    return () => {
+      clearTimeout(t);
+      io.disconnect();
+    };
+  }, [rootMargin, fallbackMs]);
+
+  return [ref, ready];
+}
 
 async function sendTG(text) {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 8000);
 
   try {
-    const res = await fetch(
-      `https://api.telegram.org/bot${TG_TOKEN}/sendMessage`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        keepalive: true,
-        signal: controller.signal,
-        body: JSON.stringify({
-          chat_id: TG_CHAT_ID,
-          text,
-          disable_web_page_preview: true,
-        }),
-      }
-    );
+    const res = await fetch(`https://api.telegram.org/bot${TG_TOKEN}/sendMessage`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      keepalive: true,
+      signal: controller.signal,
+      body: JSON.stringify({
+        chat_id: TG_CHAT_ID,
+        text,
+        disable_web_page_preview: true,
+      }),
+    });
+
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
   } finally {
     clearTimeout(timeout);
   }
 }
 
-/**
- * Ожидается в DB:
- * t.contacts = {
- *   addressTitle,
- *   phoneTitle,
- *   hoursTitle,
- *   socialTitle,
- *   formTitle,
- *   namePh,
- *   phonePh,
- *   btn,
- *   fill,
- *   sent,
- *   err,
- *   tgTitle,
- *   tgName,
- *   tgPhone,
- *   tgPage
- * }
- */
-export default function ContactsMapCard({ t, loading }) {
-  const C = useMemo(() => t?.contacts || {}, [t]);
-
-  const CONTACT = {
-    addressLine1: "Yunusobod 12, Kulol Qo‘rg‘on",
-    addressLine2: "ko‘chasi 31",
-    phone: "78 122 15 05",
-    hours: "Пн. – Сб.: 9:00 – 18:00",
-    socials: {
-      instagram: "https://instagram.com/",
-      facebook: "https://facebook.com/",
-      telegram: "https://t.me/",
-    },
-  };
+export default function ContactsMapCardSimple({ t, loading }) {
+  const C = useMemo(() => t?.contacts || t?.map || {}, [t]);
 
   const [name, setName] = useState("");
-  // ✅ empty so placeholder is visible
-  const [phone, setPhone] = useState("");
+  const [phone, setPhone] = useState("+998");
   const [sending, setSending] = useState(false);
 
   const canSend = useMemo(() => {
-    if (!name.trim()) return false;
-    // if empty -> fail, else count digits
-    if (phone.replace(/\D/g, "").length < 9) return false;
-    return true;
+    return name.trim().length > 1 && phone.replace(/\D/g, "").length >= 9;
   }, [name, phone]);
+
+  const [mapRef, mapReady] = useMapLazyMount({ rootMargin: "400px", fallbackMs: 1200 });
 
   const onSubmit = async () => {
     if (!canSend || sending) {
@@ -96,21 +103,16 @@ export default function ContactsMapCard({ t, loading }) {
     }
 
     setSending(true);
-    const toastId = toast.loading("...");
-
-    const normalizedPhone = phone.trim().startsWith("+")
-      ? phone.trim()
-      : `+${phone.trim()}`;
+    const toastId = toast.loading(C?.sending || "ОТПРАВКА...");
 
     const msg = [
       C?.tgTitle || "📩 ЗАЯВКА (Контакты)",
       "",
       `${C?.tgName || "Имя"}: ${name.trim()}`,
-      `${C?.tgPhone || "Телефон"}: ${normalizedPhone}`,
+      `${C?.tgPhone || "Телефон"}: ${phone.trim()}`,
       "",
-      `${C?.tgPage || "Страница"}: ${
-        typeof window !== "undefined" ? window.location.href : ""
-      }`,
+      `${C?.tgPage || "Страница"}: ${typeof window !== "undefined" ? window.location.href : ""}`,
+      `Дата: ${new Date().toLocaleString()}`,
     ].join("\n");
 
     try {
@@ -122,7 +124,7 @@ export default function ContactsMapCard({ t, loading }) {
         autoClose: 2500,
       });
       setName("");
-      setPhone(""); // ✅ keep placeholder visible after reset
+      setPhone("+998");
     } catch {
       toast.update(toastId, {
         render: C?.err || "❌ Ошибка отправки",
@@ -138,146 +140,153 @@ export default function ContactsMapCard({ t, loading }) {
   if (loading) return null;
 
   return (
-    <section className="relative">
-      <ToastContainer position="top-right" newestOnTop pauseOnHover />
+    <section className="bg-neutral-900">
+      <div className="flex flex-col">
+        {/* MAP */}
+        <div ref={mapRef} className="w-full h-[520px] sm:h-[620px] bg-neutral-200">
+          {mapReady ? (
+            <iframe
+              title="map"
+              src={MAP_IFRAME_SRC}
+              className="w-full h-full"
+              loading="lazy"
+              allowFullScreen
+              referrerPolicy="no-referrer-when-downgrade"
+              style={{ border: 0 }}
+              onError={() => toast.error("Map load error")}
+            />
+          ) : (
+            <div className="w-full h-full grid place-items-center text-neutral-700">
+              Loading map…
+            </div>
+          )}
+        </div>
 
-      {/* MAP */}
-      <div className="relative h-[520px] md:h-[640px] w-full">
-        <iframe
-          title="map"
-          src={MAP_IFRAME_SRC}
-          className="absolute inset-0 w-full h-full"
-          loading="lazy"
-          referrerPolicy="no-referrer-when-downgrade"
-        />
-        <div className="absolute inset-0 bg-white/10 pointer-events-none" />
-      </div>
-
-      {/* CARD */}
-      <div className="absolute left-1/2 top-1/2 w-[92%] max-w-5xl -translate-x-1/2 -translate-y-1/2">
-        <div className="bg-white shadow-2xl border border-black/10">
-          <div className="grid grid-cols-1 md:grid-cols-[1fr_10px_1fr]">
+        {/* CARD */}
+        <div className="mx-auto w-full max-w-6xl px-4 -mt-20 sm:-mt-24 lg:-mt-32">
+          <div className="bg-white shadow-xl grid grid-cols-1 lg:grid-cols-2 overflow-hidden">
             {/* LEFT */}
-            <div className="p-8 md:p-10">
-              <div className="space-y-8">
-                <div className="flex gap-4">
-                  <div className="mt-1 text-red-600">
-                    <FaMapMarkerAlt />
-                  </div>
-                  <div>
-                    <div className="font-black text-lg">
-                      {C?.addressTitle || "Адрес"}
-                    </div>
-                    <div className="mt-2 text-black/80 leading-relaxed">
-                      {CONTACT.addressLine1}
-                      <br />
-                      {CONTACT.addressLine2}
-                    </div>
-                  </div>
-                </div>
+            <div className="p-8 sm:p-10">
+              <p className="text-neutral-600 mb-5">{C?.small || "Контакты"}</p>
 
-                <div className="flex gap-4">
-                  <div className="mt-1 text-red-600">
-                    <FaPhoneAlt />
-                  </div>
-                  <div>
-                    <div className="font-black text-lg">
-                      {C?.phoneTitle || "Телефон"}
-                    </div>
-                    <div className="mt-2 text-black/80">{CONTACT.phone}</div>
-                  </div>
-                </div>
+              <h2 className="text-2xl sm:text-4xl font-black uppercase leading-tight text-neutral-900">
+                {C?.title || "Куда обращаться"}
+              </h2>
 
-                <div className="flex gap-4">
-                  <div className="mt-1 text-red-600">
-                    <FaRegClock />
-                  </div>
-                  <div>
-                    <div className="font-black text-lg">
-                      {C?.hoursTitle || "Часы работы"}
-                    </div>
-                    <div className="mt-2 text-black/80">{CONTACT.hours}</div>
-                  </div>
-                </div>
+              <div className="w-16 h-[3px] bg-red-500 my-7" />
 
-                <div>
-                  <div className="font-black text-lg">
-                    {C?.socialTitle || "Соцсети"}
-                  </div>
-                  <div className="mt-4 flex items-center gap-4">
+              <div className="space-y-4 text-neutral-800">
+                <div className="flex gap-3">
+                  <FaMapMarkerAlt className="mt-1 text-red-600" />
+                  <div>
+                    <div className="font-bold">{C?.addressTitle || "Адрес"}</div>
+                    <div className="text-neutral-700">
+                      Yunusobod 12, Kulol Qo‘rg‘on <br /> ko‘chasi 31
+                    </div>
                     <a
-                      href={CONTACT.socials.instagram}
+                      href={MAP_OPEN_URL}
                       target="_blank"
                       rel="noreferrer"
-                      className="w-11 h-11 rounded-full bg-red-600 text-white grid place-items-center hover:bg-red-700"
-                      aria-label="Instagram"
+                      className="inline-block mt-2 text-red-600 font-semibold hover:underline"
                     >
-                      <FaInstagram />
+                      {C?.openMaps || "Открыть в Google Maps"}
                     </a>
-                    <a
-                      href={CONTACT.socials.facebook}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="w-11 h-11 rounded-full bg-red-600 text-white grid place-items-center hover:bg-red-700"
-                      aria-label="Facebook"
-                    >
-                      <FaFacebookF />
+                  </div>
+                </div>
+
+                <div className="flex gap-3">
+                  <FaPhoneAlt className="mt-1 text-red-600" />
+                  <div>
+                    <div className="font-bold">{C?.phoneTitle || "Телефон"}</div>
+                    <a href={`tel:${PHONE_TEL}`} className="text-red-600 font-semibold hover:underline">
+                      {PHONE_DISPLAY}
                     </a>
-                    <a
-                      href={CONTACT.socials.telegram}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="w-11 h-11 rounded-full bg-red-600 text-white grid place-items-center hover:bg-red-700"
-                      aria-label="Telegram"
-                    >
-                      <FaTelegramPlane />
+                  </div>
+                </div>
+
+                <div className="flex gap-3">
+                  <FaRegClock className="mt-1 text-red-600" />
+                  <div>
+                    <div className="font-bold">{C?.hoursTitle || "Часы работы"}</div>
+                    <div className="text-neutral-700">{t?.workHoursText || "Пн. – Сб.: 9:00 – 18:00"}</div>
+                  </div>
+                </div>
+
+                <div className="flex gap-3">
+                  <FaTelegramPlane className="mt-1 text-red-600" />
+                  <div>
+                    <div className="font-bold">{C?.helpTitle || "Telegram"}</div>
+                    <a href={TG_LINK} target="_blank" rel="noreferrer" className="text-red-600 font-semibold hover:underline">
+                      @{TG_USERNAME}
                     </a>
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* DIVIDER */}
-            <div className="hidden md:block bg-red-600" />
-
             {/* RIGHT */}
-            <div className="p-8 md:p-10">
-              <div className="text-center font-extrabold text-black/85">
-                {C?.formTitle || ""}
+            <div className="bg-neutral-800 p-8 sm:p-10 flex flex-col gap-5">
+              <div>
+                <div className="text-white/80 text-sm">{C?.formTitle || "Оставьте заявку"}</div>
+                <div className="text-white text-2xl font-black mt-1">{C?.cta || t?.cta || "Связаться"}</div>
+                <div className="text-white/70 text-sm mt-2">{C?.fill || "Напишите имя и номер — ответим быстро"}</div>
               </div>
 
-              <div className="mt-8 space-y-5 max-w-md mx-auto">
+              <div>
+                <label className="block text-white mb-2">{C?.nameLabel || "Имя:"}</label>
                 <input
-                  className="w-full h-12 bg-neutral-200 px-4 outline-none border border-black/10"
-                  placeholder={C?.namePh || "Ваше имя"}
+                  className="w-full h-12 px-4 outline-none input"
+                  placeholder={C?.namePh || "Введите имя"}
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                 />
+              </div>
+
+              <div>
+                <label className="block text-white mb-2">{C?.phoneLabel || "Телефон:"}</label>
                 <input
-                  className="w-full h-12 bg-neutral-200 px-4 outline-none border border-black/10"
-                  placeholder={C?.phonePh || "+998"}
+                  type="tel"
+                  className="w-full h-12 px-4 outline-none input"
+                  placeholder={C?.phonePh || "+998 ..."}
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
                 />
-
-                <button
-                  type="button"
-                  onClick={onSubmit}
-                  disabled={sending}
-                  className={`w-full h-14 font-black text-white ${
-                    sending ? "bg-red-300" : "bg-red-600 hover:bg-red-700"
-                  }`}
-                >
-                  {sending ? "..." : C?.btn || "Отправить"}
-                </button>
               </div>
+
+              <button
+                onClick={onSubmit}
+                disabled={sending}
+                className={`h-14 font-bold text-white ${sending ? "bg-red-300" : "bg-red-600 hover:bg-red-700"}`}
+              >
+                {sending ? (C?.sending || "ОТПРАВКА...") : (C?.btn || "ОТПРАВИТЬ")}
+              </button>
+
+              <div className="flex gap-3">
+                <a
+                  href={MAP_OPEN_URL}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="flex-1 h-12 grid place-items-center bg-white/10 text-white hover:bg-white/15"
+                >
+                  {C?.mapsBtn || "Google Maps"}
+                </a>
+                <a
+                  href={TG_LINK}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="flex-1 h-12 grid place-items-center bg-white/10 text-white hover:bg-white/15"
+                >
+                  {C?.tgBtn || "Telegram"}
+                </a>
+              </div>
+
+              <p className="text-xs text-white/50">{C?.sentHint || "Нажимая кнопку, вы соглашаетесь на обработку данных"}</p>
             </div>
           </div>
-
-          <div className="md:hidden h-2 bg-red-600" />
         </div>
+
+        <div className="h-10 sm:h-14" />
       </div>
     </section>
   );
 }
- 

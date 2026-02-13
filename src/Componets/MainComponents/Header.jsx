@@ -1,19 +1,20 @@
+// Header.jsx
 import React from "react";
 import { FiClock, FiGlobe, FiPhone } from "react-icons/fi";
 import AnimatedContent from "../ReactBits/AnimatedContent";
+import image from "../../assets/image.png";
 
 export default function Header({ site, lang, setLang, t, loading, error }) {
   const heroBg =
-    "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=2200&q=80";
+    image;
 
-  // ✅ у тебя данные лежат в site.site.*
-  const phone = site?.site?.phone || "78 122 15 05";
-  const workHours = site?.site?.workHours || "Пн. – Сб.: 9:00 – 18:00";
+  // config
+  const phone = site?.site?.phone || "33 195 15 05";
+  const workHours =
+    t?.workHoursText || site?.site?.workHours || "Пн. – Сб.: 9:00 – 18:00";
 
-  // ✅ чтобы перевод в хедере работал, бери тексты из t (из DB)
-  // добавь эти ключи в i18n:
-  // ru: headerSubtitle, callLabel, loadingText, errorText
-  // uz: headerSubtitle, callLabel, loadingText, errorText
+
+  // ✅ тексты из DB i18n
   const headerSubtitle =
     t?.headerSubtitle || "Услуги внутренней и наружной\nрекламы с 2018 - года";
   const callLabel = t?.callLabel || "Звоните по номеру";
@@ -26,9 +27,8 @@ export default function Header({ site, lang, setLang, t, loading, error }) {
       <button
         type="button"
         onClick={() => setLang(code)}
-        className={`font-semibold transition ${
-          active ? "text-red-500" : "text-white/70 hover:text-white"
-        }`}
+        className={`font-semibold transition ${active ? "text-red-500" : "text-white/70 hover:text-white"
+          }`}
         aria-pressed={active}
       >
         {label}
@@ -53,14 +53,14 @@ export default function Header({ site, lang, setLang, t, loading, error }) {
         }}
       />
 
-      {/* ✅ HEADER FIXED */}
-      <header className="fixed top-0 left-0 w-full z-50">
-        <div className="bg-neutral-900/70 backdrop-blur-xl">
+      {/* HEADER FIXED */}
+      <header className="fixed top-0 left-0 w-full z-50 shadow-xl shadow-black/80">
+        <div className="bg-neutral-900/70 backdrop-blur-xl border-b border-white/10">
           <div className="mx-auto max-w-7xl px-4 md:px-8">
-            <div className="flex items-center justify-between py-4 gap-6">
-              {/* Logo + text */}
-              <div className="flex items-center gap-3">
-                <div className="flex items-center gap-2">
+            <div className="flex items-center justify-between py-3 md:py-4 gap-4">
+              {/* Logo + subtitle */}
+              <div className="flex items-center gap-3 min-w-0">
+                <div className="flex items-center gap-2 shrink-0">
                   <div className="w-8 h-8 bg-red-600 flex items-center justify-center font-black">
                     E
                   </div>
@@ -69,16 +69,17 @@ export default function Header({ site, lang, setLang, t, loading, error }) {
                   </span>
                 </div>
 
-                <div className="hidden md:block text-sm text-white/70 leading-tight whitespace-pre-line">
+                {/* subtitle only on md+ */}
+                <div className="hidden md:block text-sm text-white/70 leading-tight whitespace-pre-line truncate">
                   {headerSubtitle}
                 </div>
               </div>
 
-              {/* Right info */}
-              <div className="hidden lg:flex items-center gap-8 text-sm">
+              {/* DESKTOP RIGHT INFO (lg+) */}
+              <div className="hidden lg:flex items-center gap-8 text-sm shrink-0">
                 <div className="flex items-center gap-2 text-white/80">
                   <FiClock className="text-red-500" />
-                  <span>{workHours}</span>
+                  <span className="whitespace-nowrap">{workHours}</span>
                 </div>
 
                 <div className="flex items-center gap-2">
@@ -86,13 +87,12 @@ export default function Header({ site, lang, setLang, t, loading, error }) {
                   <div className="text-white/70">{callLabel}</div>
                   <a
                     href={`tel:${String(phone).replace(/\s/g, "")}`}
-                    className="text-red-500 font-extrabold tracking-wide hover:text-red-400 transition"
+                    className="text-red-500 font-extrabold tracking-wide hover:text-red-400 transition whitespace-nowrap"
                   >
                     {phone}
                   </a>
                 </div>
 
-                {/* ✅ Lang switch: active = red */}
                 <div className="flex items-center gap-2">
                   <FiGlobe className="text-white/70" />
                   <LangBtn code="uz" label="O'z" />
@@ -100,13 +100,49 @@ export default function Header({ site, lang, setLang, t, loading, error }) {
                   <LangBtn code="ru" label="Ru" />
                 </div>
               </div>
+
+              {/* MOBILE RIGHT */}
+              <div className="lg:hidden flex items-center gap-3 shrink-0">
+                <a
+                  href={`tel:${String(phone).replace(/\s/g, "")}`}
+                  className="btn btn-ghost btn-sm px-2 text-red-500"
+                  aria-label="Call"
+                  title={phone}
+                >
+                  <FiPhone />
+                </a>
+
+                <div className="flex items-center gap-2 text-xs">
+                  <FiGlobe className="text-white/70" />
+                  <LangBtn code="uz" label="O'z" />
+                  <span className="text-white/40">|</span>
+                  <LangBtn code="ru" label="Ru" />
+                </div>
+              </div>
+            </div>
+
+            {/* MOBILE SUBTITLE ROW */}
+            <div className="md:hidden pb-3">
+              <div className="text-xs text-white/70 leading-snug whitespace-pre-line">
+                {headerSubtitle}
+              </div>
+
+              <div className="mt-2 text-xs text-white/70">
+                {callLabel}{" "}
+                <a
+                  href={`tel:${String(phone).replace(/\s/g, "")}`}
+                  className="text-red-500 font-extrabold"
+                >
+                  {phone}
+                </a>
+              </div>
             </div>
           </div>
         </div>
       </header>
 
-      {/* ✅ add top padding because header is fixed */}
-      <div className="relative z-10 pt-[76px]">
+      {/* content padding for fixed header */}
+      <div className="relative z-10 pt-[96px] md:pt-[76px]">
         <AnimatedContent
           distance={100}
           direction="vertical"
@@ -121,7 +157,11 @@ export default function Header({ site, lang, setLang, t, loading, error }) {
         >
           <div className="mx-auto max-w-7xl px-4 md:px-8 pt-14 md:pt-20 pb-14 flex flex-col text-start">
             <div className="text-white/80 text-sm md:text-base mb-6">
-              {loading ? loadingText : error ? `${errorText}: ${error}` : t?.topTag}
+              {loading
+                ? loadingText
+                : error
+                  ? `${errorText}: ${error}`
+                  : t?.topTag}
             </div>
 
             <h1 className="font-black uppercase leading-[0.95] tracking-tight">
@@ -153,8 +193,10 @@ export default function Header({ site, lang, setLang, t, loading, error }) {
 
             <div className="mt-10">
               <button className="btn btn-outline border-red-600 text-white hover:bg-red-600 hover:border-red-600 rounded-none px-8">
-                {t?.cta || ""}
-                <span className="ml-2">→</span>
+                <a href="#order" className="flex items-center gap-2">
+                  {t?.cta || ""}
+                  <span className="ml-2">→</span>
+                </a>
               </button>
             </div>
           </div>

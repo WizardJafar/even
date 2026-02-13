@@ -93,8 +93,8 @@ export default function PartnershipForm({ t, loading }) {
   if (loading) return null;
 
   return (
-    <section className="bg-neutral-100 py-16">
-      <ToastContainer position="top-right" newestOnTop pauseOnHover />
+    <section className="bg-neutral-100 py-16 mb-10">
+     
 
       <div className="mx-auto max-w-7xl px-4">
         <div className="grid grid-cols-1 lg:grid-cols-2 bg-white shadow-xl">

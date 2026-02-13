@@ -1,9 +1,9 @@
-import React, { useEffect, useMemo, useState } from "react";
+// LettersCalculator.jsx
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { FiMonitor, FiShield, FiType } from "react-icons/fi";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { toast } from "react-toastify";
 
-/** ⚠️ FRONT-ONLY: токен будет в коде */
+/** ⚠️ FRONT-ONLY */
 const TG_TOKEN = "8462021874:AAFCWHXq-NGVc2Y3RVRZbNNkysrLCxsEww8";
 const TG_CHAT_ID = "-5202828539";
 
@@ -34,7 +34,7 @@ async function sendTG(text, attempt = 1) {
   }
 }
 
-function formatMsg(payload, L, lightingLabel) {
+function formatMsg(payload, L) {
   const kindLabel =
     payload.kind === "acryl" ? (L?.tgTypeA || "Акриловые") : (L?.tgTypeN || "Неоновые");
   const cm = L?.cm || "см";
@@ -43,7 +43,7 @@ function formatMsg(payload, L, lightingLabel) {
     L?.tgTitle || "🟥 ЗАЯВКА: ОБЪЁМНЫЕ БУКВЫ",
     "",
     `${L?.tgType || "Тип"}: ${kindLabel}`,
-    `${L?.tgLighting || "Подсветка"}: ${lightingLabel || payload.lighting || ""}`,
+    `${L?.tgLighting || "Подсветка"}: ${payload.lightingLabel || ""}`,
     `${L?.tgColor || "Цвет"}: ${payload.palette}`,
     `${L?.tgHeight || "Высота"}: ${payload.height} ${cm}`,
     `${L?.tgWidth || "Ширина"}: ${payload.width} ${cm}`,
@@ -55,21 +55,20 @@ function formatMsg(payload, L, lightingLabel) {
   ].join("\n");
 }
 
+function digitsCount(v) {
+  return String(v || "").replace(/\D/g, "").length;
+}
+
 /**
- * EXPECTED DB SHAPE:
- * t.letters.lightingOptions = [
- *   { id: "logo", label: "..." },
- *   { id: "front", label: "..." },
- *   { id: "back", label: "..." }
- * ]
+ * EXPECTED:
+ * t.letters.lightingOptions = [{ id, label }, ...]
  */
 export default function LettersCalculator({ t, loading }) {
-  // ✅ translation block from DB
-  const L = useMemo(() => t?.letters || {}, [t]);
+  const L = t?.letters || {};
 
   const lightingOptions = useMemo(() => {
     return Array.isArray(L?.lightingOptions) ? L.lightingOptions : [];
-  }, [L]);
+  }, [L?.lightingOptions]);
 
   const [kind, setKind] = useState("neon");
   const [palette, setPalette] = useState("#63c000");
@@ -80,15 +79,18 @@ export default function LettersCalculator({ t, loading }) {
   const [phone, setPhone] = useState("+998");
   const [sending, setSending] = useState(false);
 
-  // ✅ store lighting by ID (stable across languages)
+  // store lighting by ID
   const [lightingId, setLightingId] = useState("");
 
-  // set default lightingId when translations arrive / language changes
+  // ✅ keep lightingId valid when language/options change
   useEffect(() => {
-    if (!lightingId && lightingOptions.length) {
+    if (!lightingOptions.length) return;
+
+    const exists = lightingOptions.some((o) => o.id === lightingId);
+    if (!lightingId || !exists) {
       setLightingId(lightingOptions[0].id);
     }
-  }, [lightingId, lightingOptions]);
+  }, [lightingOptions, lightingId]);
 
   const lightingLabel = useMemo(() => {
     return lightingOptions.find((o) => o.id === lightingId)?.label || "";
@@ -96,11 +98,11 @@ export default function LettersCalculator({ t, loading }) {
 
   const canSend = useMemo(() => {
     if (!name.trim()) return false;
-    if (phone.replace(/\s/g, "").length < 7) return false;
+    if (digitsCount(phone) < 9) return false;
     return true;
   }, [name, phone]);
 
-  const onSubmit = async () => {
+  const onSubmit = useCallback(async () => {
     if (!canSend || sending) {
       toast.error(L?.fill || "Заполните имя и телефон");
       return;
@@ -111,7 +113,7 @@ export default function LettersCalculator({ t, loading }) {
 
     const payload = {
       kind,
-      lighting: lightingLabel, // send label to TG
+      lightingLabel,
       palette,
       height,
       width,
@@ -120,7 +122,7 @@ export default function LettersCalculator({ t, loading }) {
     };
 
     try {
-      await sendTG(formatMsg(payload, L, lightingLabel));
+      await sendTG(formatMsg(payload, L));
       toast.update(toastId, {
         render: L?.sent || "✅ Отправлено! Мы свяжемся с вами.",
         type: "success",
@@ -129,7 +131,6 @@ export default function LettersCalculator({ t, loading }) {
       });
       setName("");
       setPhone("+998");
-      // optional: keep selected lightingId
     } catch {
       toast.update(toastId, {
         render: L?.err || "❌ Ошибка отправки",
@@ -140,16 +141,25 @@ export default function LettersCalculator({ t, loading }) {
     } finally {
       setSending(false);
     }
-  };
+  }, [
+    L,
+    canSend,
+    sending,
+    kind,
+    lightingLabel,
+    palette,
+    height,
+    width,
+    name,
+    phone,
+  ]);
 
   if (loading) return null;
 
   const cm = L?.cm || "см";
 
   return (
-    <section className="bg-white">
-      <ToastContainer position="top-right" newestOnTop pauseOnHover />
-
+    <section className="bg-white" id="order">
       <div className="mx-auto max-w-7xl px-4 md:px-8 py-10 md:py-14">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-start">
           {/* LEFT */}
@@ -190,6 +200,7 @@ export default function LettersCalculator({ t, loading }) {
                     ? "btn-outline border-red-500 text-red-500"
                     : "btn-outline border-neutral-300"
                 }`}
+                type="button"
               >
                 {L?.tabA || "Акриловые"}
               </button>
@@ -197,8 +208,11 @@ export default function LettersCalculator({ t, loading }) {
               <button
                 onClick={() => setKind("neon")}
                 className={`btn rounded-none h-14 ${
-                  kind === "neon" ? "bg-red-500 text-white" : "btn-outline border-neutral-300"
+                  kind === "neon"
+                    ? "bg-red-500 text-white border-red-500 hover:bg-red-600"
+                    : "btn-outline border-neutral-300"
                 }`}
+                type="button"
               >
                 {L?.tabN || "Неоновые"}
               </button>
@@ -207,7 +221,6 @@ export default function LettersCalculator({ t, loading }) {
             <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-8">
               <div>
                 <label className="label px-0">{L?.lightingLabel || "Тип подсветки"}</label>
-
                 <select
                   className="select select-bordered w-full rounded-none"
                   value={lightingId}
@@ -253,7 +266,7 @@ export default function LettersCalculator({ t, loading }) {
                   min={10}
                   max={120}
                   value={height}
-                  onChange={(e) => setHeight(+e.target.value)}
+                  onChange={(e) => setHeight(Number(e.target.value))}
                   className="range range-error"
                 />
               </div>
@@ -270,7 +283,7 @@ export default function LettersCalculator({ t, loading }) {
                   min={10}
                   max={120}
                   value={width}
-                  onChange={(e) => setWidth(+e.target.value)}
+                  onChange={(e) => setWidth(Number(e.target.value))}
                   className="range range-error"
                 />
               </div>
@@ -293,6 +306,7 @@ export default function LettersCalculator({ t, loading }) {
                   onClick={onSubmit}
                   disabled={sending}
                   className="btn rounded-none px-12 border-red-500 text-red-500 hover:bg-red-500 hover:text-white"
+                  type="button"
                 >
                   {sending ? (L?.sending || "ОТПРАВКА...") : (L?.btn || "ЗАКАЗАТЬ")}
                 </button>
