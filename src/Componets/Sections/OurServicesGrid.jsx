@@ -4,8 +4,8 @@ import AnimatedContent from "../ReactBits/AnimatedContent";
 // ===== IMAGES =====
 import img3D from "../../assets/3D.jpg";
 import lightboxHero from "../../assets/lightbox_Hero.jpg";
-import van from "../../assets/van.png";
-import neon from "../../assets/neon.png";
+import van from "../../assets/spark.jpg";
+import neon from "../../assets/neon.jpg";
 import stels from "../../assets/stels.png";
 import roof from "../../assets/roof.png";
 import tables from "../../assets/tables.png";

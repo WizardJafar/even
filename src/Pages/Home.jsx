@@ -12,6 +12,7 @@ import WorkflowSection from "../Componets/Sections/WorkflowSection";
 import LettersOrderForm from "../Componets/Sections/LettersOrderForm";
 import PartnershipForm from "../Componets/Sections/PartnershipForm";
 import ContactsMapCard from "../Componets/Sections/ContactsMapCard";
+import OurPartners from "../Componets/Sections/OurPartners";
 
 const Home = () => {
   const { site, loading, error } = useSiteConfig();
@@ -46,7 +47,7 @@ const Home = () => {
 
       <LettersOrderForm t={t} loading={loading} />
       <PartnershipForm t={t} loading={loading} />
-
+      <OurPartners t={t} />
       <ContactsMapCard t={t} loading={loading} />
 
 
