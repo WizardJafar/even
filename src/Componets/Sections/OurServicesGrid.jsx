@@ -91,12 +91,7 @@ export default function OurServicesSectionGrid({ t, loading }) {
         </div>
 
 
-        <div className="mt-8 flex justify-center">
-          <button className="btn btn-outline border-red-600 text-neutral-900 hover:bg-red-600 hover:text-white rounded-none px-10">
-            {services.btn}
-            <span className="ml-2">→</span>
-          </button>
-        </div>
+   
       </div>
     </section >
   );
