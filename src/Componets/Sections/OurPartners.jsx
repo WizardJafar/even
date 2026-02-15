@@ -12,6 +12,7 @@ import my5 from '../../assets/partners/my5.png';
 import pizza from '../../assets/partners/pizza.png';
 import sev from '../../assets/partners/sev.png';
 import uzk from '../../assets/partners/uzk.png';
+import { FaTelegramPlane } from "react-icons/fa";
 
 const techLogos = [
     { src: cola, title: "Cola" },
@@ -30,13 +31,15 @@ const OurPartners = ({ t }) => {
     const [visibleCount, setVisibleCount] = useState(4); // сколько логотипов показать сразу
     const [loadingMore, setLoadingMore] = useState(false);
     const partnersTitle = t?.partnersTitle || "НАШИ ПАРТНЕРЫ";
+    const portfolioTitle = t?.portfolioTitle || "НАШЕ ПОРТФОЛИО";
+    const portfolioTitleBtn = t?.portfolioTitleBtn || "Посмотреть портфолио";
     const handleLoadMore = () => {
         if (visibleCount >= techLogos.length) return;
         setLoadingMore(true);
         setTimeout(() => {
             setVisibleCount((prev) => Math.min(prev + 4, techLogos.length));
             setLoadingMore(false);
-        }, 500); // имитация загрузки
+        }, []); // имитация загрузки
     };
 
     // Можно добавить scroll listener для автоматической подгрузки
@@ -107,6 +110,14 @@ const OurPartners = ({ t }) => {
                         Загрузка...
                     </div>
                 )}
+            </div>
+            <div className="text-center mt-8">
+                <p className=" text-center font-extrabold tracking-wide text-red-500 text-2xl sm:text-3xl md:text-5xl uppercase mb-10">{portfolioTitle}</p>
+                <a href="https://t.me/viveski_uz" target="_blank" >
+                    <button className="btn  btn-soft hover:bg-red-600 text-red-500 border-red-500 hover:text-white font-bold py-3 px-6 rounded-full inline-flex items-center">
+                       {portfolioTitleBtn}<FaTelegramPlane className="inline-block w-5 h-5 ml-2" />
+                    </button>
+                </a>
             </div>
         </section>
     );

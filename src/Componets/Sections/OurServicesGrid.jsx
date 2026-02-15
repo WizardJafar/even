@@ -8,7 +8,7 @@ import van from "../../assets/spark.jpg";
 import neon from "../../assets/neon.jpg";
 import stels from "../../assets/stels.png";
 import roof from "../../assets/roof.png";
-import tables from "../../assets/tables.png";
+import table from "../../assets/table.jpg";
 import plotter from "../../assets/plotter.png";
 import offers from "../../assets/offers.jpg";
 import stand from "../../assets/stand.jpg";
@@ -20,7 +20,7 @@ const SERVICE_IMAGES = [
   neon,
   stels,
   roof,
-  tables,
+  table,
   plotter,
   offers,
   stand,
